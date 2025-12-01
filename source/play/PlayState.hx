@@ -218,6 +218,50 @@ class PlayState extends MusicBeatState
 	 */
 	public var scrollType(default, set):String;
 	
+// ===================================================
+// AUTO BOTPLAY HIT SYSTEM (Vs D&B Volume 1)
+// ===================================================
+function botplayAutoHit():Void
+{
+    // Loop all spawned notes on the player's strumline
+    playingStrumline.forEachNote(function(note:Note)
+    {
+        if (note == null) return;
+
+        // Only player notes
+        if (!note.mustPress) return;
+
+        // Must be hittable
+        if (!note.canBeHit) return;
+
+        // Already hit, skip
+        if (note.wasGoodHit) return;
+
+        // Trigger correct hit system
+        playingStrumline.hitNote(note);
+
+        // Custom animation override (optional)
+        var anim = botGetSingAnim(note.direction);
+        playingChar.playAnim(anim, true);
+        playingChar.holdTimer = 0;
+
+        note.wasGoodHit = true;
+    });
+}
+
+// return correct animation name
+function botGetSingAnim(dir:Int):String
+{
+    return switch (dir)
+    {
+        case 0: "singLEFT";
+        case 1: "singDOWN";
+        case 2: "singUP";
+        case 3: "singRIGHT";
+        default: "idle";
+    }
+}
+
 	function set_scrollType(value:String):String
 	{
 		if (dadStrums != null)
@@ -600,10 +644,13 @@ class PlayState extends MusicBeatState
 	var noteLimboFrames:Int;
 	var pressingKey5Global:Bool;
 
+	public var cpuControlled:Bool = false;
+
 	/**
 	 * Initalizes a new PlayState instance.
 	 * @param params The parameters to initalize PlayState with.
 	 */
+
 	public function new(?params:PlayStateParams)
 	{
 		super();
@@ -806,6 +853,13 @@ class PlayState extends MusicBeatState
 			}
 		});
 		
+		// ===================================================
+// BOTPLAY: auto-hit notes when cpuControlled is true
+// ===================================================
+if (cpuControlled)
+{
+    botplayAutoHit();
+}
 		handleInputs();
 		processNotes(elapsed);
 	}
