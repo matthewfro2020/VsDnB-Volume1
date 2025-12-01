@@ -359,7 +359,14 @@ class PauseSubState extends MusicBeatSubstate {
 		add(grpMenuShit);
 
 		for (i in 0...menuItems.length) {
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, LanguageManager.getTextString('pause_${menuItems[i].name}'));
+			var label = menuItems[i].name;
+
+			if (label == "Botplay") {
+				label = "Botplay: " + (Preferences.botplay ? "ON" : "OFF");
+			}
+
+			// Apply localization if needed
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, LanguageManager.getTextString('pause_' + label));
 			songText.isMenuItem = true;
 			songText.menuItemGroup = grpMenuShit.members;
 			songText.targetY = i;
