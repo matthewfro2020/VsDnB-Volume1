@@ -51,6 +51,8 @@ class Preferences
 		'fps' => 144,
 		'borderless' => false,
 		'darkMode' => false,
+
+		'botplay' => false,
 	];
 
 	/**
@@ -392,6 +394,24 @@ class Preferences
 	}
 
 	// MISC //
+
+/**
+ * Whether the game should control the player (Auto-Play)
+ */
+public static var botplay(get, set):Bool;
+
+static function set_botplay(value:Bool):Bool
+{
+    save.data.botplay = value;
+    save.flush();
+    onPreferenceChanged.dispatch('botplay', value);
+    return value;
+}
+
+static function get_botplay():Bool
+{
+    return save?.data?.botplay;
+}
 	
 	/**
 	 * Whether the game should play a hitsound when hitting a note.
