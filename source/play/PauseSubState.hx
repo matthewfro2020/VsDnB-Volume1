@@ -75,7 +75,8 @@ class PauseSubState extends MusicBeatSubstate {
 		{name: 'Restart Song', callback: restartSong},
 		#if debug {name: 'No Miss Mode', callback: toggleNoMiss},
 		#end
-		{name: '', callback: changeCharacter},
+		{name: 'Botplay', callback: toggleBotplay},
+		{name: 'Change Character', callback: changeCharacter},
 		{name: 'Options', callback: openSettingsMenu},
 		{name: 'Exit to menu', callback: returnBackToMenu},
 	];
@@ -88,6 +89,7 @@ class PauseSubState extends MusicBeatSubstate {
 		{name: 'Restart Song', callback: restartSong},
 		#if debug {name: 'No Miss Mode', callback: toggleNoMiss},
 		#end
+		{name: 'Botplay', callback: toggleBotplay},
 		{name: 'Options', callback: openSettingsMenu},
 		{name: 'Exit to menu', callback: returnBackToMenu},
 	];
@@ -100,7 +102,8 @@ class PauseSubState extends MusicBeatSubstate {
 		{name: 'Restart Song', callback: restartSong},
 		#if debug {name: 'No Miss Mode', callback: toggleNoMiss},
 		#end
-		{name: 'Change Character', callback: returnToPlayerSelect},
+		{name: 'Botplay', callback: toggleBotplay},
+		{name: 'Change Player', callback: returnToPlayerSelect},
 		{name: 'Options', callback: openSettingsMenu},
 		{name: 'Exit to menu', callback: returnBackToMenu},
 	];
@@ -444,6 +447,22 @@ class PauseSubState extends MusicBeatSubstate {
 			returnToMenu(() -> new StoryMenuState());
 		else
 			returnToMenu(() -> new FreeplayState());
+	}
+
+	/**
+	 * Toggles botplay mode.
+	 */
+	static function toggleBotplay(state:PauseSubState):Void {
+		Preferences.botplay = !Preferences.botplay;
+
+		// Sync active PlayState with new preference
+		if (PlayState.instance != null)
+			PlayState.instance.cpuControlled = Preferences.botplay;
+
+		// Refresh menu label text
+		state.getPauseOptions();
+		state.generatePauseOptions();
+		state.changeSelection();
 	}
 
 	/**
